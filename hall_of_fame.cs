@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 public class HallOfFame
 {
-    public List<PlayerScore> scores = new List<PlayerScore>();
+    // HERMETYZACJA: Lista jest prywatna! Z zewnątrz można do niej dodać wynik
+    // tylko za pomocą kontrolowanej, publicznej metody AddScore.
+    private List<PlayerScore> scores = new List<PlayerScore>();
 
     public void AddScore(PlayerScore score)
     {
@@ -17,19 +19,12 @@ public class HallOfFame
 
     public bool HasAnyScores()
     {
-        if (scores.Count > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        if (scores.Count > 0) return true;
+        else return false;
     }
 
     public void ShowTop5(int difficulty)
     {
-        // 1. Przepisujemy wyniki tylko z wybranego poziomu trudności
         List<PlayerScore> filteredScores = new List<PlayerScore>();
         for (int i = 0; i < scores.Count; i++)
         {
@@ -39,28 +34,19 @@ public class HallOfFame
             }
         }
 
-        // 2. Sortowanie Bąbelkowe (Bubble Sort) - sortujemy od najlepszego
+        // Sortowanie bąbelkowe
         for (int i = 0; i < filteredScores.Count; i++)
         {
             for (int j = 0; j < filteredScores.Count - 1; j++)
             {
-                bool swap = false;
+                bool swap = false; 
                 
-                // Jeśli obecny ma więcej prób niż następny, to zamieniamy miejscami (chcemy najmniej)
-                if (filteredScores[j].Attempts > filteredScores[j + 1].Attempts)
-                {
-                    swap = true;
-                }
-                // Jeśli mają tyle samo prób, decyduje czas (chcemy najkrótszy)
+                if (filteredScores[j].Attempts > filteredScores[j + 1].Attempts) swap = true;
                 else if (filteredScores[j].Attempts == filteredScores[j + 1].Attempts)
                 {
-                    if (filteredScores[j].TimeInSeconds > filteredScores[j + 1].TimeInSeconds)
-                    {
-                        swap = true;
-                    }
+                    if (filteredScores[j].TimeInSeconds > filteredScores[j + 1].TimeInSeconds) swap = true;
                 }
 
-                // Zamiana miejscami za pomocą zmiennej pomocniczej "temp"
                 if (swap == true)
                 {
                     PlayerScore temp = filteredScores[j];
@@ -70,26 +56,19 @@ public class HallOfFame
             }
         }
 
-        // 3. Wyświetlamy tylko pierwszych 5
         Console.WriteLine("\n--- TOP 5 ---");
-        int count = 0;
+        int count = 0; 
+        
         for (int i = 0; i < filteredScores.Count; i++)
         {
-            if (count >= 5)
-            {
-                break; // przerywa pętlę, jeśli pokazaliśmy już 5 wyników
-            }
-
-            PlayerScore s = filteredScores[i];
+            if (count >= 5) break; 
             
+            PlayerScore s = filteredScores[i];
             string marker = "";
-            if (s.IsNewGamePlus == true)
-            {
-                marker = "[NG+]";
-            }
+            if (s.IsNewGamePlus == true) marker = "[NG+]";
 
             Console.WriteLine((count + 1) + ". " + s.Name + " - Proby: " + s.Attempts + ", Czas: " + s.TimeInSeconds + "s " + marker);
-            count++;
+            count++; 
         }
     }
 }

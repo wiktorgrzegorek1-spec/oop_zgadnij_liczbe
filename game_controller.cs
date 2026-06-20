@@ -4,7 +4,6 @@ public class GameController
 {
     public Settings settings = new Settings();
     public HallOfFame hof = new HallOfFame();
-    public Gameplay gameplay = new Gameplay();
 
     public void Start()
     {
@@ -12,50 +11,29 @@ public class GameController
         {
             Console.Clear(); 
             
-            // --- MENU GŁÓWNE ---
             if (settings.Language == "PL")
             {
                 Console.WriteLine("Witaj w Zgadnij Liczbe 2!");
                 Console.WriteLine("1. Nowa Gra (Zgadnij liczbe 1)");
                 Console.WriteLine("2. Nowa Gra Plus (NG+)");
                 Console.WriteLine("3. Ustawienia");
-                
-                if (hof.HasAnyScores() == true)
-                {
-                    Console.WriteLine("4. Hall of Fame (TOP 5)");
-                }
+                if (hof.HasAnyScores()) Console.WriteLine("4. Hall of Fame (TOP 5)");
             }
-            else // Wersja Angielska
+            else
             {
                 Console.WriteLine("Welcome to Guess Number 2!");
                 Console.WriteLine("1. New Game (Guess Number 1)");
                 Console.WriteLine("2. New Game Plus (NG+)");
                 Console.WriteLine("3. Settings");
-                
-                if (hof.HasAnyScores() == true)
-                {
-                    Console.WriteLine("4. Hall of Fame (TOP 5)");
-                }
+                if (hof.HasAnyScores()) Console.WriteLine("4. Hall of Fame (TOP 5)");
             }
 
             string choice = Console.ReadLine(); 
 
-            if (choice == "1")
-            {
-                StartGame(false);
-            }
-            else if (choice == "2")
-            {
-                StartGame(true);
-            }
-            else if (choice == "3")
-            {
-                OpenSettings(); 
-            }
-            else if (choice == "4" && hof.HasAnyScores() == true)
-            {
-                ShowHallOfFame(); 
-            }
+            if (choice == "1") StartGame(false);
+            else if (choice == "2") StartGame(true);
+            else if (choice == "3") OpenSettings(); 
+            else if (choice == "4" && hof.HasAnyScores()) ShowHallOfFame(); 
         }
     }
 
@@ -64,14 +42,20 @@ public class GameController
         if (settings.Language == "PL") Console.WriteLine("Wybierz trudnosc (1-Latwy, 2-Sredni, 3-Trudny):");
         else Console.WriteLine("Choose difficulty (1-Easy, 2-Medium, 3-Hard):");
         
-        string input = Console.ReadLine();
         int diff = 0;
-        int.TryParse(input, out diff);
+        int.TryParse(Console.ReadLine(), out diff);
 
         if (diff >= 1 && diff <= 3)
         {
-            PlayerScore result = gameplay.Play(diff, isNgPlus, settings);
+            // ABSTRAKCJA W PRAKTYCE: Zmienna jest typu BaseGame, ale przypisujemy do 
+            // niej konkretną instancję w zależności od wybranego trybu
+            BaseGame gameEngine;
             
+            if (isNgPlus == true) gameEngine = new NgPlusGame();
+            else gameEngine = new StandardGame();
+
+            // Odpalamy grę, wynik zapisujemy do bazy
+            PlayerScore result = gameEngine.Play(diff, settings);
             if (result != null)
             {
                 hof.AddScore(result); 
@@ -81,7 +65,6 @@ public class GameController
 
     public void OpenSettings()
     {
-        // --- MENU USTAWIEŃ ---
         if (settings.Language == "PL")
         {
             Console.WriteLine("\n--- USTAWIENIA ---");
@@ -113,7 +96,6 @@ public class GameController
         }
         else if (choice == "C" || choice == "c")
         {
-            // Pytanie o potwierdzenie również w dwóch językach
             if (settings.Language == "PL") Console.WriteLine("Na pewno? (T/N)");
             else Console.WriteLine("Are you sure? (Y/N)");
             
@@ -127,7 +109,6 @@ public class GameController
 
     public void ShowHallOfFame()
     {
-        // --- MENU HALL OF FAME ---
         if (settings.Language == "PL")
         {
             Console.WriteLine("\n--- HALL OF FAME ---");
@@ -139,18 +120,13 @@ public class GameController
             Console.WriteLine("Choose difficulty: 1. Easy | 2. Medium | 3. Hard");
         }
         
-        string input = Console.ReadLine();
         int diff = 0;
-        int.TryParse(input, out diff);
+        int.TryParse(Console.ReadLine(), out diff);
 
-        if (diff >= 1 && diff <= 3)
-        {
-            hof.ShowTop5(diff);
-        }
+        if (diff >= 1 && diff <= 3) hof.ShowTop5(diff);
         
         if (settings.Language == "PL") Console.WriteLine("Wcisnij Enter, aby wrocic...");
         else Console.WriteLine("Press Enter to return...");
-        
         Console.ReadLine();
     }
 }
