@@ -10,36 +10,51 @@ public class GameController
     {
         while (true)
         {
-            Console.Clear();
-            if (settings.Language == "PL") Console.WriteLine("Witaj w Zgadnij Liczbe 2!");
-            else Console.WriteLine("Welcome to Guess Number 2!");
+            Console.Clear(); 
             
-            Console.WriteLine("1. Nowa Gra (Zgadnij liczbe 1)");
-            Console.WriteLine("2. Nowa Gra Plus (NG+)");
-            Console.WriteLine("3. Ustawienia");
-            
-            if (hof.HasAnyScores() == true)
+            // --- MENU GŁÓWNE ---
+            if (settings.Language == "PL")
             {
-                Console.WriteLine("4. Hall of Fame (TOP 5)");
+                Console.WriteLine("Witaj w Zgadnij Liczbe 2!");
+                Console.WriteLine("1. Nowa Gra (Zgadnij liczbe 1)");
+                Console.WriteLine("2. Nowa Gra Plus (NG+)");
+                Console.WriteLine("3. Ustawienia");
+                
+                if (hof.HasAnyScores() == true)
+                {
+                    Console.WriteLine("4. Hall of Fame (TOP 5)");
+                }
+            }
+            else // Wersja Angielska
+            {
+                Console.WriteLine("Welcome to Guess Number 2!");
+                Console.WriteLine("1. New Game (Guess Number 1)");
+                Console.WriteLine("2. New Game Plus (NG+)");
+                Console.WriteLine("3. Settings");
+                
+                if (hof.HasAnyScores() == true)
+                {
+                    Console.WriteLine("4. Hall of Fame (TOP 5)");
+                }
             }
 
-            string choice = Console.ReadLine();
+            string choice = Console.ReadLine(); 
 
             if (choice == "1")
             {
-                StartGame(false); // false oznacza, że to nie jest NG+
+                StartGame(false);
             }
             else if (choice == "2")
             {
-                StartGame(true); // true oznacza, że to jest NG+
+                StartGame(true);
             }
             else if (choice == "3")
             {
-                OpenSettings();
+                OpenSettings(); 
             }
             else if (choice == "4" && hof.HasAnyScores() == true)
             {
-                ShowHallOfFame();
+                ShowHallOfFame(); 
             }
         }
     }
@@ -53,26 +68,36 @@ public class GameController
         int diff = 0;
         int.TryParse(input, out diff);
 
-        // Uruchamiamy grę tylko jeśli wpisano 1, 2 lub 3
         if (diff >= 1 && diff <= 3)
         {
             PlayerScore result = gameplay.Play(diff, isNgPlus, settings);
             
-            // Jeśli wynik nie jest pusty (czyli gracz nie przegrał zakładu), to go dodajemy
             if (result != null)
             {
-                hof.AddScore(result);
+                hof.AddScore(result); 
             }
         }
     }
 
     public void OpenSettings()
     {
-        Console.WriteLine("\n--- USTAWIENIA ---");
-        Console.WriteLine("A - Jezyk (Obecnie: " + settings.Language + ")");
-        Console.WriteLine("B - Pytaj o zaklad (Obecnie: " + settings.AskForBet + ")");
-        Console.WriteLine("C - Wyczysc Hall of Fame");
-        Console.WriteLine("D - Powrot");
+        // --- MENU USTAWIEŃ ---
+        if (settings.Language == "PL")
+        {
+            Console.WriteLine("\n--- USTAWIENIA ---");
+            Console.WriteLine("A - Jezyk (Obecnie: " + settings.Language + ")");
+            Console.WriteLine("B - Pytaj o zaklad (Obecnie: " + settings.AskForBet + ")");
+            Console.WriteLine("C - Wyczysc Hall of Fame");
+            Console.WriteLine("D - Powrot");
+        }
+        else
+        {
+            Console.WriteLine("\n--- SETTINGS ---");
+            Console.WriteLine("A - Language (Current: " + settings.Language + ")");
+            Console.WriteLine("B - Ask for bet (Current: " + settings.AskForBet + ")");
+            Console.WriteLine("C - Clear Hall of Fame");
+            Console.WriteLine("D - Return");
+        }
 
         string choice = Console.ReadLine();
         
@@ -88,9 +113,12 @@ public class GameController
         }
         else if (choice == "C" || choice == "c")
         {
-            Console.WriteLine("Na pewno? (T/N)");
+            // Pytanie o potwierdzenie również w dwóch językach
+            if (settings.Language == "PL") Console.WriteLine("Na pewno? (T/N)");
+            else Console.WriteLine("Are you sure? (Y/N)");
+            
             string confirm = Console.ReadLine();
-            if (confirm == "T" || confirm == "t")
+            if (confirm == "T" || confirm == "t" || confirm == "Y" || confirm == "y")
             {
                 hof.Clear();
             }
@@ -99,8 +127,17 @@ public class GameController
 
     public void ShowHallOfFame()
     {
-        Console.WriteLine("\n--- HALL OF FAME ---");
-        Console.WriteLine("Wybierz poziom: 1. Latwy | 2. Sredni | 3. Trudny");
+        // --- MENU HALL OF FAME ---
+        if (settings.Language == "PL")
+        {
+            Console.WriteLine("\n--- HALL OF FAME ---");
+            Console.WriteLine("Wybierz poziom: 1. Latwy | 2. Sredni | 3. Trudny");
+        }
+        else
+        {
+            Console.WriteLine("\n--- HALL OF FAME ---");
+            Console.WriteLine("Choose difficulty: 1. Easy | 2. Medium | 3. Hard");
+        }
         
         string input = Console.ReadLine();
         int diff = 0;
@@ -111,7 +148,9 @@ public class GameController
             hof.ShowTop5(diff);
         }
         
-        Console.WriteLine("Wcisnij Enter, aby wrocic...");
+        if (settings.Language == "PL") Console.WriteLine("Wcisnij Enter, aby wrocic...");
+        else Console.WriteLine("Press Enter to return...");
+        
         Console.ReadLine();
     }
 }
