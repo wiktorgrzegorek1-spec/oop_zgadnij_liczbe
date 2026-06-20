@@ -54,6 +54,14 @@ public class Gameplay
             int guess = 0;
             if (int.TryParse(input, out guess) == false)
             {
+                if (settings.Language == "PL") 
+                {
+                    Console.WriteLine("Blad! Musisz wpisac liczbe. Sprobuj ponownie.");
+                }
+                else 
+                {
+                    Console.WriteLine("Error! You must enter a number. Try again.");
+                }
                 continue; // wraca na początek pętli, jeśli ktoś wpisał np. litery
             }
 
