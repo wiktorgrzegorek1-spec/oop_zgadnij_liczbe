@@ -98,10 +98,26 @@ public class StandardGame : BaseGame
         int betLimit = 0;
         if (settings.AskForBet == true)
         {
-            if (settings.Language == "PL") Console.WriteLine("Ile maksymalnie prob potrzebujesz?");
-            else Console.WriteLine("Max attempts?");
-            
-            int.TryParse(Console.ReadLine(), out betLimit);
+            // Nieskończona pętla, która nie wypuści gracza, dopóki nie poda cyfr
+            while (true) 
+            {
+                if (settings.Language == "PL") Console.WriteLine("Ile maksymalnie prob potrzebujesz? (Wpisz 0 aby pominac zaklad):");
+                else Console.WriteLine("Max attempts? (Enter 0 to skip bet):");
+                
+                string input = Console.ReadLine();
+
+                // Jeśli udało się zamienić tekst na liczbę, przerywamy pętlę (break) i gramy dalej
+                if (int.TryParse(input, out betLimit) == true)
+                {
+                    break; 
+                }
+                // Jeśli wpisano litery, wyświetlamy błąd i pętla leci od nowa
+                else
+                {
+                    if (settings.Language == "PL") Console.WriteLine("Blad! Musisz wpisac liczbe.");
+                    else Console.WriteLine("Error! You must enter a number.");
+                }
+            }
         }
         return betLimit;
     }
